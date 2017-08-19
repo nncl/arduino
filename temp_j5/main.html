@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+
+<body ng-app="myApp" ng-controller="AppCtrl as appCtrl">
+
+  <div class="container">
+    <div class="row">
+      <div class="col text-center">
+        <br>
+        <h1>Automação Residencial</h1>
+        <br>
+        <button type="button" class="btn btn-primary" ng-click="appCtrl.doToggleLED()">
+          <span ng-if="!appCtrl.led">Ligar</span>
+          <span ng-if="appCtrl.led">Desligar</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+  <script type="text/javascript">
+    var app = angular.module("myApp", []);
+
+    app.constant("SETTINGS", {
+      "URL_API" : "http://localhost:3000/api/"
+    });
+
+    app.controller("AppCtrl", function(LEDService){
+      var vm = this;
+      vm.led = false;
+      vm.ledService = LEDService;
+
+      vm.doToggleLED = function(){
+        vm.led = !vm.led;
+        vm.ledService.doTurnOn();
+      };
+    });
+
+    app.service("LEDService", function($q, $http, SETTINGS){
+      var self = {
+        "doTurnOn" : function(){
+          var d = $q.defer();
+
+          $http.get(SETTINGS.URL_API + "toggle")
+            .success(function(res){
+              d.resolve(res);
+            })
+
+            .error(function(err){
+              d.reject(err);
+            });
+
+          return d.promise;
+        }
+      };
+
+      return self;
+    })
+  </script>
+
+</body>
+</html>

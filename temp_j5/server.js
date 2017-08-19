@@ -18,23 +18,21 @@ board.on("ready", () => {
   });
 
   temperature.on("change", function() {
-    console.log(this.celsius + "°C", this.fahrenheit + "°F");
-    console.log(__dirname);
     temperature = this.celsius;
   });
 });
 
 // Routes
 app.get("/", (req, res) => {
-  res.send("FIAP IOT");
+  res.sendFile(__dirname + "/main.html");
 });
 
-app.get("/toggle", (req, res) => {
+app.get("/api/toggle", (req, res) => {
   led.toggle();
   res.send("LED TOGGLED");
 });
 
-app.get("/temperature", (req, res) => {
+app.get("/api/temperature", (req, res) => {
   res.send(temperature.toString());
 });
 
